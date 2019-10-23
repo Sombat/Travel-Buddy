@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>The Wall</title>
+	{% load static %}
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+<body>
+	<div class="navbar bg-dark text-right">
+		<div class="container">
+			<div class="row">
+				<div class="col">
+					<p>&nbsp;</p>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="container">
+		<div class="row">
+			{% if messages %}
+			<div class="col alert alert-danger mt-5" role="alert">
+				<ul class="messages">    
+					{% for message in messages %}    
+					<li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+					{% endfor %}
+				</ul>
+			</div>
+			{% endif %}
+		</div>
+		<div class="row">
+			<div class="col">
+				<h1 class="mb-5 mt-5">CodingDojo Wall</h1>
+				<form id='message-form'action='/post-message' method='post'>
+					{% csrf_token %}
+					<div class="form-group row">
+						<div class="col">
+							<label for="wall-message" class="col-form-label">Post a message</label>
+							<textarea id="wall-message" class="form-control" form="message-form" name="wall-message" required="true">Write your message here...</textarea>
+						</div>
+					</div>
+					<div class="form-group row">
+						<div class="col">
+							<input type="hidden" id="form-type" name="form-type" value="post-message">
+							<input class='btn btn-primary' type='submit' value='Post a message'>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+		{% for message in all_messages %}
+		<div class="row">
+			<div class="col mt-5">
+				<h4>{{ message.user.first_name }} {{ message.user.last_name }} - {{ message.created_at }}</h4>
+				<p>{{ message.message }}</p>
+			</div>
+		</div>
+		{% for comment in all_comments %}
+		{% if comment.message.id == message.id %}
+		<div class="row">
+				<div class="col offset-sm-1 mt-3">
+					<h4>{{ comment.user.first_name }} {{ comment.user.last_name }} - {{ comment.created_at }}</h4>
+					<p>{{ comment.comment }}</p>
+				</div>
+		</div>
+		{% endif %}
+		{% endfor %}
+		<div class="row">
+			<div class="col offset-sm-1">
+				<form id='comment-form'action='/post-comment' method='post'>
+					{% csrf_token %}
+					<div class="form-group row">
+						<div class="col">
+							<label for="wall-comment" class="col-form-label">Post a comment</label>
+							<textarea id="wall-comment" class="form-control"  name="wall-comment" required="true">Write your comment here...</textarea>
+						</div>
+					</div>
+					<div class="form-group row">
+						<div class="col">
+							<input type="hidden" id="form-type" name="form-type" value="post-comment">
+							<input type="hidden" id="message_to_comment_on_id" name="message_to_comment_on_id" value="{{ message.id }}">
+							<input class='btn btn-secondary float-right' type='submit' value='Post a message'>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+		{% endfor %}
+	</div>
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</body>
+</html>
